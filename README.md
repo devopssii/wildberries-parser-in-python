@@ -11,8 +11,12 @@ The WildBerries Parser is a Python script that allows you to collect information
 - Save the collected data in xlsx format for further analysis
 
 ## Installation
-1. Clone this repository to your local machine.
-2. Navigate to the project directory.
+1. mkdir myenv
+2. cd myenv
+3. python -m venv env
+4. source env/bin/activate
+5. Clone this repository to your local machine.
+6. Navigate to the project directory.
 
 ## Prerequisites
 - Python 3.x
