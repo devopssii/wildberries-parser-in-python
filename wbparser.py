@@ -1,4 +1,3 @@
-import json
 from datetime import date
 from os import path
 import pandas as pd
@@ -6,6 +5,7 @@ import requests
 from chromadb import ChromaDB
 from openpyxl import Workbook
 from openpyxl.utils.dataframe import dataframe_to_rows
+from sentence_transformers import SentenceTransformer
 
 class WildBerriesParser:
     """
@@ -17,6 +17,7 @@ class WildBerriesParser:
         product_cards (list): A list to store the parsed product cards.
         directory (str): The directory path where the script is located.
         chroma_db (ChromaDB): An instance of ChromaDB for database operations.
+        model (SentenceTransformer): An instance of SentenceTransformer for text embedding.
     """
 
     def __init__(self):
@@ -37,6 +38,7 @@ class WildBerriesParser:
         self.product_cards = []
         self.directory = path.dirname(path.abspath(__file__))
         self.chroma_db = ChromaDB()
+        self.model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
 
     def download_current_catalogue(self):
         """
@@ -105,14 +107,17 @@ class WildBerriesParser:
         """
         Write the parsed product cards to the ChromaDB database.
 
-        This function iterates over the product_cards list and inserts
-        each product card into the ChromaDB database.
+        This function iterates over the product_cards list, embeds
+        the description text using the SentenceTransformer model,
+        and inserts each product card into the ChromaDB database.
 
         Returns:
             None
         """
         for product_card in self.product_cards:
-            self.chroma_db.insert_product_card(product_card)
+            description = product_card['description']
+            embedding = self.model.encode(description)
+            self.chroma_db.insert_product_card(embedding, product_card)
 
     def write_to_excel(self):
         """
