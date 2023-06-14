@@ -101,22 +101,27 @@ class WildBerriesParser:
             category_url = category['url']
             product_cards_url = f'https://search.wb.ru/catalog/{category_url}'
             response = requests.get(product_cards_url, headers=self.headers).json()
+
+            # Embed text descriptions
+            for product_card in response['products']:
+                description = product_card['description']
+                embedding = self.model.encode(description)
+                product_card['embedding'] = embedding.tolist()
+
             self.product_cards.extend(response['products'])
 
     def write_to_database(self):
         """
         Write the parsed product cards to the ChromaDB database.
 
-        This function iterates over the product_cards list, embeds
-        the description text using the SentenceTransformer model,
-        and inserts each product card into the ChromaDB database.
+        This function iterates over the product_cards list and inserts
+        each product card into the ChromaDB database.
 
         Returns:
             None
         """
         for product_card in self.product_cards:
-            description = product_card['description']
-            embedding = self.model.encode(description)
+            embedding = product_card.pop('embedding')  # Remove the embedding from the product card
             self.chroma_db.insert_product_card(embedding, product_card)
 
     def write_to_excel(self):
