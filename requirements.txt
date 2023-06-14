@@ -1,2 +1,4 @@
-pandas==1.5.3
-requests==2.28.2
+pandas
+requests
+openpyxl
+chroma_db
