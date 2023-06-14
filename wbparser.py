@@ -3,7 +3,7 @@ from datetime import date
 from os import path
 import pandas as pd
 import requests
-from chroma_db import ChromaDB
+from chromadb import ChromaDB
 from openpyxl import Workbook
 from openpyxl.utils.dataframe import dataframe_to_rows
 
